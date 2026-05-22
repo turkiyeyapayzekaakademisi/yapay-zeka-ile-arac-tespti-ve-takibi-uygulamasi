@@ -140,4 +140,3 @@ Public bir domain üzerinden ulaşılabilir yapacağız.
 - Ortam değişkenlerinin Railway Referenced syntax ile yazılımı
 - Dockerfile'ı platform-agnostic hale getirmeyi
 
-# yapay-zeka-ile-arac-tespti-ve-takibi-uygulamasi

@@ -1,0 +1,62 @@
+# =======================================
+
+# 1. PostgreSQL veritabanı servisini tanımla
+# 2. FastAPI backend servisini tanımla
+# 3. Streamlit frontend servisini tanımla
+# 4. Kalıcı veri hacmini (volume) tanımla
+
+# =======================================
+
+version: "3.9"
+
+services:
+  
+  db:
+    image: postgres:16-alpine
+    container_name: otopark_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: otopark
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: tryza/arac-takip-backend:latest
+    container_name: otopark_backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    
+  frontend:
+    image: tryza/arac-takip-frontend:latest
+    container_name: otopark_frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    environment:
+      API_BASE_URL: http://backend:8000/api/v1
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  postgres_data:
